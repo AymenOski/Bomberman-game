@@ -40,6 +40,7 @@ function drawGrid(grid) {
             fragment.appendChild(cell);
         }
     }
+    // playground.appendChild()
     playground.appendChild(fragment);
 }
 

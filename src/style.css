@@ -7,18 +7,20 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    height: 97vh;
 }
 
 .playground {
     display: grid;
     grid-template-columns: repeat(11, 40px);
     grid-template-rows: repeat(11, 40px);
-    /* gap: 2px */
+    gap: 2px
 }
 
-.wall-corner,
-.floor {
+.floor ,
+.unbreakable-wall,
+.breakable-wall,
+.wall {
     background-size: cover;
     background-position: center;
     border-radius: 5px;
@@ -29,8 +31,9 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
 }
 
-/* reminder: need to search for what is a good image size to work with */
-/* some images like bottom-wall are too big size-wise*/
+.floor {
+    background-image: url(../images/floor.png);
+}
 
 .unbreakable-wall {
     background-image: url(../images/unbreakable.png);
@@ -40,10 +43,16 @@
     background-image: url(../images/breakable.png);
 }
 
-.floor {
-    background-image: url(../images/floor.png);
-}
 
 .wall {
     background-image: url(../images/wall.png);
+}
+
+.hud-container {
+    position: absolute;
+    left: 34.2%;
+    width: 400px;
+}
+.hud-image {
+    width: 120%;
 }
