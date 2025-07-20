@@ -17,14 +17,7 @@
     /* gap: 2px */
 }
 
-.corner1,
-.corner2,
-.corner3,
-.corner4,
-.top-wall,
-.bottom-wall,
-.left-wall,
-.right-wall,
+.wall-corner,
 .floor {
     background-size: cover;
     background-position: center;
@@ -32,54 +25,25 @@
     overflow: hidden;
 }
 
+.breakable-wall, .unbreakable-wall, .floor {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
 /* reminder: need to search for what is a good image size to work with */
 /* some images like bottom-wall are too big size-wise*/
-.floor {
-    background-image: url('../images/floor.png');
-}
-
-
-.corner1 {
-    background-image: url(../images/c1.png);
-}
-
-.corner2 {
-    background-image: url(../images/c2.png);
-}
-
-.corner3 {
-    background-image: url(../images/c3.png);
-}
-
-.corner4 {
-    background-image: url(../images/c4.png);
-}
-
-.top-wall {
-    background-image: url(../images/top-wall.png);
-}
-
-.bottom-wall {
-    background-image: url(../images/bottom-wall.png);
-}
-
-.left-wall {
-    background-image: url(../images/left-wall.png);
-}
-
-.right-wall {
-    background-image: url(../images/right-wall.png);
-}
 
 .unbreakable-wall {
     background-image: url(../images/unbreakable.png);
 }
 
-
 .breakable-wall {
     background-image: url(../images/breakable.png);
 }
 
-.empty-corner {
+.floor {
     background-image: url(../images/floor.png);
+}
+
+.wall {
+    background-image: url(../images/wall.png);
 }

@@ -3,17 +3,17 @@ const fragment = document.createDocumentFragment();
 
 
 const grid = [
-    ["C1", "WT", "WT", "WT", "WT", "WT", "WT", "WT", "WT", "WT", "C2"],
-    ["WL", "C", "C", "E", "E", "E", "E", "E", "C", "C", "WR"],
-    ["WL", "C", "E", "E", "E", "E", "E", "E", "E", "C", "WR"],
-    ["WL", "E", "E", "E", "E", "E", "E", "E", "E", "E", "WR"],
-    ["WL", "E", "E", "E", "E", "E", "E", "E", "E", "E", "WR"],
-    ["WL", "E", "E", "E", "E", "E", "E", "E", "E", "E", "WR"],
-    ["WL", "E", "E", "E", "E", "E", "E", "E", "E", "E", "WR"],
-    ["WL", "E", "E", "E", "E", "E", "E", "E", "E", "E", "WR"],
-    ["WL", "C", "E", "E", "E", "E", "E", "E", "E", "C", "WR"],
-    ["WL", "C", "C", "E", "E", "E", "E", "E", "C", "C", "WR"],
-    ["C3", "WB", "WB", "WB", "WB", "WB", "WB", "WB", "WB", "WB", "C4"]
+    ["W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W"],
+    ["W", "EC", "EC", "E", "E", "E", "E", "E", "EC", "EC", "W"],
+    ["W", "EC", "E", "E", "E", "E", "E", "E", "E", "EC", "W"],
+    ["W", "E", "E", "E", "E", "E", "E", "E", "E", "E", "W"],
+    ["W", "E", "E", "E", "E", "E", "E", "E", "E", "E", "W"],
+    ["W", "E", "E", "E", "E", "E", "E", "E", "E", "E", "W"],
+    ["W", "E", "E", "E", "E", "E", "E", "E", "E", "E", "W"],
+    ["W", "E", "E", "E", "E", "E", "E", "E", "E", "E", "W"],
+    ["W", "EC", "E", "E", "E", "E", "E", "E", "E", "EC", "W"],
+    ["W", "EC", "EC", "E", "E", "E", "E", "E", "EC", "EC", "W"],
+    ["W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W"]
 ];
 
 function drawGrid(grid) {
@@ -22,19 +22,8 @@ function drawGrid(grid) {
         for (let j = 0; j < grid[0].length; j++) {
             const cell = document.createElement('div');
             if (grid[i][j].startsWith("W")) {
-                if (grid[i][j][1] === "T") {
-                    cell.classList.add("top-wall");
+                cell.classList.add("wall");
 
-                } else if (grid[i][j][1] === "L") {
-                    cell.classList.add("left-wall");
-
-                } else if (grid[i][j][1] === "R") {
-                    cell.classList.add("right-wall");
-
-                } else if (grid[i][j][1] === "B") {
-                    cell.classList.add("bottom-wall");
-
-                }
             } else if (grid[i][j] === "E") {
                 cell.classList.add("floor");
 
@@ -44,22 +33,9 @@ function drawGrid(grid) {
             } else if (grid[i][j] === "UW") {
                 cell.classList.add("unbreakable-wall");
 
-                // corners 
-            } else if (grid[i][j].startsWith("C")) {
-                if (grid[i][j].includes("1")) {
-                    cell.classList.add("corner1");
+            } else if (grid[i][j] === "EC") { // player starting point
+                cell.classList.add("floor");
 
-                } else if (grid[i][j].includes("2")) {
-                    cell.classList.add("corner2");
-
-                } else if (grid[i][j].includes("3")) {
-                    cell.classList.add("corner3");
-
-                } else if (grid[i][j].includes("4")) {
-                    cell.classList.add("corner4");
-                } else {
-                    cell.classList.add("empty-corner");
-                }
             }
             fragment.appendChild(cell);
         }
