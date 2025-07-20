@@ -71,18 +71,15 @@ function transformGrid(grid) {
     for (let i = 0; i < grid.length; i++) {
         for (let j = 0; j < grid[i].length; j++) {
             if (grid[i][j] === "E") {
-                if (j === 1 && i != 0 && i != grid.length - 1 || i === 1 && j != 0 && j !== grid.length - 1 || j === grid[i].length - 2 && i != 0 && i != grid.length - 1 || i === grid.length - 2 && j != 0 && j != grid.length - 1) {
-                    if (Math.random() <= 0.5) {
-                        grid[i][j] = "E";
-                        continue
-                    } else {
-                        grid[i][j] = "BW";
-                        continue
-                    }
+                if (isProtectedPath(i, j, grid)) {
+                    grid[i][j] = Math.random() < 0.5 ? "E" : "BW";
+                    continue;
                 }
-                if (Math.random() <= 0.20) {
+
+                const r = Math.random();
+                if (r <= 0.20) {
                     grid[i][j] = "UW";
-                } else if (Math.random() <= 0.66) {
+                } else if (r <= 0.66) {
                     grid[i][j] = "BW";
                 } else {
                     grid[i][j] = "E";
@@ -91,6 +88,14 @@ function transformGrid(grid) {
         }
     }
     return grid;
+}
+
+function isProtectedPath(i, j, grid) {
+    const isLeftPath = j === 1 && i > 0 && i < grid.length - 1;
+    const isTopPath = i === 1 && j > 0 && j < grid[0].length - 1;
+    const isRightPath = j === grid[0].length - 2 && i > 0 && i < grid.length - 1;
+    const isBottomPath = i === grid.length - 2 && j > 0 && j < grid[0].length - 1;
+    return isLeftPath || isTopPath || isRightPath || isBottomPath;
 }
 
 const newGrid = transformGrid(grid);

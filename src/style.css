@@ -32,6 +32,8 @@
     overflow: hidden;
 }
 
+/* reminder: need to search for what is a good image size to work with */
+/* some images like bottom-wall are too big size-wise*/
 .floor {
     background-image: url('../images/floor.png');
 }
