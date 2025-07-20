@@ -1,5 +1,5 @@
 * {
-    border: 3px solid #ff0000;
+    /* border: 3px solid #ff0000; */
     box-sizing: border-box;
 }
 
@@ -14,23 +14,70 @@
     display: grid;
     grid-template-columns: repeat(11, 40px);
     grid-template-rows: repeat(11, 40px);
-    gap: 2px;
+    /* gap: 2px */
 }
 
-.wall {
-    background-image: url('./images/wall.png');
+.corner1,
+.corner2,
+.corner3,
+.corner4,
+.top-wall,
+.bottom-wall,
+.left-wall,
+.right-wall,
+.floor {
     background-size: cover;
     background-position: center;
+    border-radius: 5px;
+    overflow: hidden;
 }
 
-.empty {
-    background-image: url('./images/floor.png');
-    background-size: cover;
-    background-position: center;
+.floor {
+    background-image: url('../images/floor.png');
 }
 
-.wall,
-.empty {
-    width: 40px;
-    height: 40px;
+
+.corner1 {
+    background-image: url(../images/c1.png);
+}
+
+.corner2 {
+    background-image: url(../images/c2.png);
+}
+
+.corner3 {
+    background-image: url(../images/c3.png);
+}
+
+.corner4 {
+    background-image: url(../images/c4.png);
+}
+
+.top-wall {
+    background-image: url(../images/top-wall.png);
+}
+
+.bottom-wall {
+    background-image: url(../images/bottom-wall.png);
+}
+
+.left-wall {
+    background-image: url(../images/left-wall.png);
+}
+
+.right-wall {
+    background-image: url(../images/right-wall.png);
+}
+
+.unbreakable-wall {
+    background-image: url(../images/unbreakable.png);
+}
+
+
+.breakable-wall {
+    background-image: url(../images/breakable.png);
+}
+
+.empty-corner {
+    background-image: url(../images/floor.png);
 }
