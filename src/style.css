@@ -1,0 +1,36 @@
+* {
+    border: 3px solid #ff0000;
+    box-sizing: border-box;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.playground {
+    display: grid;
+    grid-template-columns: repeat(11, 40px);
+    grid-template-rows: repeat(11, 40px);
+    gap: 2px;
+}
+
+.wall {
+    background-image: url('./images/wall.png');
+    background-size: cover;
+    background-position: center;
+}
+
+.empty {
+    background-image: url('./images/floor.png');
+    background-size: cover;
+    background-position: center;
+}
+
+.wall,
+.empty {
+    width: 40px;
+    height: 40px;
+}
