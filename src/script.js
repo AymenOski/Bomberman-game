@@ -1,5 +1,4 @@
 const playground = document.getElementsByClassName('playground')[0];
-const fragment = document.createDocumentFragment();
 
 
 const grid = [
@@ -17,7 +16,8 @@ const grid = [
 ];
 
 function drawGrid(grid) {
-
+    const fragment = document.createDocumentFragment();
+    
     for (let i = 0; i < grid.length; i++) {
         for (let j = 0; j < grid[0].length; j++) {
             const cell = document.createElement('div');
@@ -40,7 +40,8 @@ function drawGrid(grid) {
             fragment.appendChild(cell);
         }
     }
-    // playground.appendChild()
+    const child = fragment.children[grid[0].length + 1]
+    child.classList.add('player');
     playground.appendChild(fragment);
 }
 
@@ -78,3 +79,72 @@ function isProtectedPath(i, j, grid) {
 const newGrid = transformGrid(grid);
 
 drawGrid(newGrid);
+
+let playerPosition = { x: 1, y: 1 };
+function canMovePlayer(newX, newY, grid) {
+    switch (grid[newY][newX]) {
+        case "W":
+        case "BW":
+        case "UW":
+            return false;
+        default:
+            return true;
+    }
+}
+
+
+function MovePlayer(direction) {
+    switch (direction) {
+        case "up":
+            break;
+        case "down":
+            break;
+        case "left":
+            break;
+        case "right":
+            break;
+        default:
+            break;
+    }
+}
+
+function handleKeyDown(event) {
+    const key = event.key;
+    let newX = playerPosition.x;
+    let newY = playerPosition.y;
+    let direction = null;
+
+    switch (event.key) {
+        case "ArrowUp":
+            newY--;
+            direction = "up";
+            break;
+        case "ArrowDown":
+            newY++;
+            direction = "down";
+            break;
+        case "ArrowLeft":
+            newX--;
+            direction = "left";
+            break;
+        case "ArrowRight":
+            newX++;
+            direction = "right";
+            break;
+        default:
+            return;
+    }
+
+    if (canMovePlayer(newX, newY, grid)) {
+        playerPosition.x = newX;
+        playerPosition.y = newY;
+    }
+    MovePlayer(direction);
+
+    console.log("New player position:", playerPosition);
+}
+
+document.addEventListener("keydown", handleKeyDown);
+
+
+

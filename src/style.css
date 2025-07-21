@@ -11,13 +11,14 @@
 }
 
 .playground {
+    position: relative;
     display: grid;
     grid-template-columns: repeat(11, 40px);
     grid-template-rows: repeat(11, 40px);
     gap: 2px
 }
 
-.floor ,
+.floor,
 .unbreakable-wall,
 .breakable-wall,
 .wall {
@@ -25,10 +26,15 @@
     background-position: center;
     border-radius: 5px;
     overflow: hidden;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+
 }
 
-.breakable-wall, .unbreakable-wall, .floor {
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+.breakable-wall,
+.unbreakable-wall,
+.floor {
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
 }
 
 .floor {
@@ -53,6 +59,47 @@
     left: 34.2%;
     width: 400px;
 }
+
 .hud-image {
     width: 120%;
+}
+
+.cell {
+    position: relative;
+    width: 32px;
+    height: 32px;
+}
+
+.player {
+    position: absolute;
+    top: 20px;
+    left: 46px;
+    width: calc(12*40px);
+    height: calc(6.5*40px);
+    background-image: url(../images/player-1.png);
+    background-size: 100%;
+    background-position: 0 0;
+    /* animation: playAnimation 0.5s steps(4) infinite; */
+}
+
+@keyframes playAnimation {
+    0% {
+        background-position: 0 0;
+    }
+
+    25% {
+        background-position: -32px 0;
+    }
+
+    50% {
+        background-position: -64px 0;
+    }
+
+    75% {
+        background-position: -96px 0;
+    }
+
+    100% {
+        background-position: 0 0;
+    }
 }
