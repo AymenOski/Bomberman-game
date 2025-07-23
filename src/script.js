@@ -1,5 +1,16 @@
 const playground = document.getElementsByClassName('playground')[0];
-
+const CELL_SIZE = 40;
+const TOP = CELL_SIZE - 20;
+const LEFT = CELL_SIZE + 20;
+const SPRITE_COLUMNS = 18;
+const SPRITE_ROWS = 5;
+const SPRITES = {
+    player1: "../images/player-1.png",
+    player2: "../images/player-2.png",
+    enemy1: "../images/Enemie1.png",
+};
+let FRAME_WIDTH, FRAME_HEIGHT, SPRITE_SHEET_WIDTH, SPRITE_SHEET_HEIGHT , offsetX, offsetY;
+let playerDiv;
 
 const grid = [
     ["W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W"],
@@ -15,33 +26,57 @@ const grid = [
     ["W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W"]
 ];
 
-function drawGrid(grid) {
+// Helper to auto-calculate frame size
+function getSpriteFrameSize(imageUrl, columns, rows, callback) {
+    const img = new Image();
+    img.onload = function() {
+        FRAME_WIDTH = Math.floor(img.width / columns);
+        FRAME_HEIGHT = Math.floor(img.height / rows);
+        SPRITE_SHEET_WIDTH = img.width;
+        SPRITE_SHEET_HEIGHT = img.height;
+        callback();
+    };
+    img.src = imageUrl;
+}
+
+function drawGrid(grid , frameRow = 0, frameCol = 8) {
+    // playground.innerHTML = "";
     const fragment = document.createDocumentFragment();
-    
+    playerDiv = document.createElement('div');
+
     for (let i = 0; i < grid.length; i++) {
         for (let j = 0; j < grid[0].length; j++) {
             const cell = document.createElement('div');
             if (grid[i][j].startsWith("W")) {
                 cell.classList.add("wall");
-
             } else if (grid[i][j] === "E") {
                 cell.classList.add("floor");
-
             } else if (grid[i][j] === "BW") {
                 cell.classList.add("breakable-wall");
-
             } else if (grid[i][j] === "UW") {
                 cell.classList.add("unbreakable-wall");
-
             } else if (grid[i][j] === "EC") { // player starting point
                 cell.classList.add("floor");
-
+                if (i === 1 && j === 1) {
+                    playerDiv.style.position = "absolute";
+                    playerDiv.style.top = `${TOP}px`;
+                    playerDiv.style.left = `${LEFT}px`;
+                    playerDiv.style.width = `${FRAME_WIDTH}px`;
+                    playerDiv.style.height = `${FRAME_HEIGHT}px`;
+                    playerDiv.style.backgroundSize = `${SPRITE_SHEET_WIDTH}px ${SPRITE_SHEET_HEIGHT}px`;
+                    playerDiv.style.backgroundImage = `url(${SPRITES.player1})`;
+                    playerDiv.style.transform = "scale(2)";
+                    offsetX = -frameCol * FRAME_WIDTH;
+                    offsetY = -frameRow * FRAME_HEIGHT;
+                    playerDiv.style.backgroundPosition = `${offsetX}px ${offsetY}px`;
+                    playerDiv.style.imageRendering = "pixelated";
+                    playerDiv.style.setProperty("image-rendering", "crisp-edges");
+                    fragment.appendChild(playerDiv);
+                }
             }
             fragment.appendChild(cell);
         }
     }
-    const child = fragment.children[grid[0].length + 1]
-    child.classList.add('player');
     playground.appendChild(fragment);
 }
 
@@ -53,7 +88,6 @@ function transformGrid(grid) {
                     grid[i][j] = Math.random() < 0.5 ? "E" : "BW";
                     continue;
                 }
-
                 const r = Math.random();
                 if (r <= 0.20) {
                     grid[i][j] = "UW";
@@ -78,34 +112,48 @@ function isProtectedPath(i, j, grid) {
 
 const newGrid = transformGrid(grid);
 
-drawGrid(newGrid);
-
-let playerPosition = { x: 1, y: 1 };
-function canMovePlayer(newX, newY, grid) {
-    switch (grid[newY][newX]) {
+let playerPosition = { x: 1 * LEFT, y: 1 * TOP };
+function canMovePlayer(newX, newY) {
+    console.log(grid[Math.ceil(newY / CELL_SIZE)][Math.ceil(newX / CELL_SIZE)]);
+    switch (grid[Math.ceil(newY / CELL_SIZE)][Math.ceil(newX / CELL_SIZE)]) {
         case "W":
         case "BW":
         case "UW":
             return false;
-        default:
+        case "E":
+        case "EC":            
             return true;
     }
 }
 
-
 function MovePlayer(direction) {
+    let frameCol = 0;
+    let frameRow = 0;
     switch (direction) {
         case "up":
+            frameRow = 0;
+            frameCol = 0;
             break;
         case "down":
+            frameRow = 0;
+            frameCol = 8;
             break;
         case "left":
+            frameRow = 0;
+            frameCol = 4;
             break;
         case "right":
+            frameRow = 0;
+            frameCol = 10;
             break;
         default:
             break;
-    }
+        }
+        const offsetX = -frameCol * FRAME_WIDTH;
+        const offsetY = -frameRow * FRAME_HEIGHT;
+        playerDiv.style.left = `${playerPosition.x}px`;
+        playerDiv.style.top = `${playerPosition.y}px`;
+    playerDiv.style.backgroundPosition = `${offsetX}px ${offsetY}px`;
 }
 
 function handleKeyDown(event) {
@@ -114,37 +162,44 @@ function handleKeyDown(event) {
     let newY = playerPosition.y;
     let direction = null;
 
-    switch (event.key) {
+    switch (key) {
         case "ArrowUp":
-            newY--;
+            newY = playerPosition.y - 5;
             direction = "up";
             break;
         case "ArrowDown":
-            newY++;
+            newY = playerPosition.y + 5;
             direction = "down";
             break;
         case "ArrowLeft":
-            newX--;
+            newX = playerPosition.x - 5;
             direction = "left";
             break;
         case "ArrowRight":
-            newX++;
+            newX = playerPosition.x + 5;
             direction = "right";
             break;
         default:
             return;
     }
-
-    if (canMovePlayer(newX, newY, grid)) {
+    console.log(newX, newY);
+    
+    if (canMovePlayer(newX, newY)) {        
         playerPosition.x = newX;
         playerPosition.y = newY;
     }
-    MovePlayer(direction);
-
-    console.log("New player position:", playerPosition);
+    MovePlayer(direction , offsetX, offsetY);
+    console.log(playerPosition.x);
+    
+    console.log(`Player moved to: (${playerPosition.x}, ${playerPosition.y})`);
 }
 
 document.addEventListener("keydown", handleKeyDown);
+
+// draw grid after image loads and frame size is calculated
+getSpriteFrameSize(SPRITES.player1, SPRITE_COLUMNS, SPRITE_ROWS, () => {
+    drawGrid(newGrid);
+});
 
 
 
