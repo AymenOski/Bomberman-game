@@ -1,15 +1,15 @@
 const playground = document.getElementsByClassName('playground')[0];
 const CELL_SIZE = 40;
-const TOP = CELL_SIZE - 20;
-const LEFT = CELL_SIZE + 20;
 const SPRITE_COLUMNS = 18;
 const SPRITE_ROWS = 5;
+const TOP = CELL_SIZE - 20;
+const LEFT = CELL_SIZE + 10;
 const SPRITES = {
     player1: "../images/player-1.png",
     player2: "../images/player-2.png",
     enemy1: "../images/Enemie1.png",
 };
-let FRAME_WIDTH, FRAME_HEIGHT, SPRITE_SHEET_WIDTH, SPRITE_SHEET_HEIGHT , offsetX, offsetY;
+let FRAME_WIDTH, FRAME_HEIGHT, SPRITE_SHEET_WIDTH, SPRITE_SHEET_HEIGHT, offsetX, offsetY;
 let playerDiv;
 
 const grid = [
@@ -29,7 +29,7 @@ const grid = [
 // Helper to auto-calculate frame size
 function getSpriteFrameSize(imageUrl, columns, rows, callback) {
     const img = new Image();
-    img.onload = function() {
+    img.onload = function () {
         FRAME_WIDTH = Math.floor(img.width / columns);
         FRAME_HEIGHT = Math.floor(img.height / rows);
         SPRITE_SHEET_WIDTH = img.width;
@@ -39,7 +39,7 @@ function getSpriteFrameSize(imageUrl, columns, rows, callback) {
     img.src = imageUrl;
 }
 
-function drawGrid(grid , frameRow = 0, frameCol = 8) {
+function drawGrid(grid, frameRow = 0, frameCol = 8) {
     // playground.innerHTML = "";
     const fragment = document.createDocumentFragment();
     playerDiv = document.createElement('div');
@@ -89,7 +89,7 @@ function transformGrid(grid) {
                     continue;
                 }
                 const r = Math.random();
-                if (r <= 0.20) {
+                if (r <= 0.33) {
                     grid[i][j] = "UW";
                 } else if (r <= 0.66) {
                     grid[i][j] = "BW";
@@ -114,46 +114,54 @@ const newGrid = transformGrid(grid);
 
 let playerPosition = { x: 1 * LEFT, y: 1 * TOP };
 function canMovePlayer(newX, newY) {
-    console.log(grid[Math.ceil(newY / CELL_SIZE)][Math.ceil(newX / CELL_SIZE)]);
-    switch (grid[Math.ceil(newY / CELL_SIZE)][Math.ceil(newX / CELL_SIZE)]) {
+    // Convert pixel coordinates to grid indices
+    const gridX = Math.ceil((newX / LEFT));
+    const gridY = Math.ceil((newY / TOP));
+    
+    switch (grid[gridY][gridX]) {
         case "W":
         case "BW":
         case "UW":
             return false;
         case "E":
-        case "EC":            
+        case "EC":
             return true;
     }
 }
 
-function MovePlayer(direction) {
-    let frameCol = 0;
+function MovePlayer(direction ,moves = 2 , nextFrame = 0) {
+    let frameCol = 0 ;
     let frameRow = 0;
+    if (moves === 0){
+        playerDiv.style.left = `${playerPosition.x}px`;
+        playerDiv.style.top = `${playerPosition.y}px`;
+        return;
+    }
     switch (direction) {
         case "up":
             frameRow = 0;
-            frameCol = 0;
+            frameCol = 0 + nextFrame;
             break;
         case "down":
             frameRow = 0;
-            frameCol = 8;
+            frameCol = 8 + nextFrame;
             break;
         case "left":
             frameRow = 0;
-            frameCol = 4;
+            frameCol = 4 + nextFrame;
             break;
         case "right":
             frameRow = 0;
-            frameCol = 10;
+            frameCol = 10 + nextFrame;
             break;
-        default:
-            break;
-        }
-        const offsetX = -frameCol * FRAME_WIDTH;
-        const offsetY = -frameRow * FRAME_HEIGHT;
-        playerDiv.style.left = `${playerPosition.x}px`;
-        playerDiv.style.top = `${playerPosition.y}px`;
+    }
+    const offsetX = -frameCol * FRAME_WIDTH;
+    const offsetY = -frameRow * FRAME_HEIGHT;
     playerDiv.style.backgroundPosition = `${offsetX}px ${offsetY}px`;
+    
+    setTimeout(() => {
+        MovePlayer(direction, moves - 1, nextFrame + 1);
+    }, 100);
 }
 
 function handleKeyDown(event) {
@@ -164,34 +172,34 @@ function handleKeyDown(event) {
 
     switch (key) {
         case "ArrowUp":
-            newY = playerPosition.y - 5;
+            newY = playerPosition.y - 10;
             direction = "up";
             break;
         case "ArrowDown":
-            newY = playerPosition.y + 5;
+            newY = playerPosition.y + 10;
             direction = "down";
             break;
         case "ArrowLeft":
-            newX = playerPosition.x - 5;
+            newX = playerPosition.x - 10;
             direction = "left";
             break;
         case "ArrowRight":
-            newX = playerPosition.x + 5;
+            newX = playerPosition.x + 10;
             direction = "right";
             break;
         default:
             return;
     }
-    console.log(newX, newY);
-    
-    if (canMovePlayer(newX, newY)) {        
+
+    if (canMovePlayer(newX, newY)) {
         playerPosition.x = newX;
         playerPosition.y = newY;
+        console.log(`Player moved to: (${playerPosition.x}, ${playerPosition.y})`);
+        
     }
-    MovePlayer(direction , offsetX, offsetY);
-    console.log(playerPosition.x);
-    
-    console.log(`Player moved to: (${playerPosition.x}, ${playerPosition.y})`);
+    MovePlayer(direction, 2, 0);
+
+    // console.log(`Player moved to: (${playerPosition.x}, ${playerPosition.y})`);
 }
 
 document.addEventListener("keydown", handleKeyDown);
