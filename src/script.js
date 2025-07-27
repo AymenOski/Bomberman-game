@@ -149,7 +149,7 @@ function MovePlayer(moves = 2, nextFrame = 0) {
     if (isAnimating) return; // prevent race condition for lastFrameTime variable
     isAnimating = true;
 
-    
+    // Method 1 : for doing a delay
     let now = performance.now();
     let delta = now - lastFrameTime;
     
@@ -167,7 +167,17 @@ function MovePlayer(moves = 2, nextFrame = 0) {
         if (moves === 0) {
             playerDiv.style.left = `${playerPosition.x}px`;
             playerDiv.style.top = `${playerPosition.y}px`;
-            isAnimating = false;
+    // Method 2 : for doing a delay
+            (async () => {
+                // Reset the position to the initial frame
+                offsetX = -8 * FRAME_WIDTH;
+                offsetY = -0 * FRAME_HEIGHT;
+                await new Promise(resolve => setTimeout(resolve, 150));
+                playerDiv.style.backgroundPosition = `${offsetX}px ${offsetY}px`;
+                isAnimating = false;
+                
+            })();
+            
             return;
         }
         moves -= 1;
