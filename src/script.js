@@ -37,7 +37,7 @@ const grid = [
 // Helper to auto-calculate frame size
 function getSpriteFrameSize(imageUrl, columns, rows, callback) {
     const img = new Image();
-    
+
     img.onload = function () {
         FRAME_WIDTH = Math.floor(img.width / columns);
         FRAME_HEIGHT = Math.floor(img.height / rows);
@@ -74,7 +74,7 @@ function drawGrid(grid, frameRow = 0, frameCol = 8) {
                     playerDiv.style.width = `${FRAME_WIDTH}px`;
                     playerDiv.style.height = `${FRAME_HEIGHT}px`;
                     playerDiv.style.backgroundSize = `${SPRITE_SHEET_WIDTH}px ${SPRITE_SHEET_HEIGHT}px`;
-                    playerDiv.style.backgroundImage = `url(${SPRITES.player1})`;
+                    playerDiv.style.backgroundImage = `url(${SPRITES.enemy1})`;
                     playerDiv.style.transform = "scale(2)";
                     offsetX = -frameCol * FRAME_WIDTH;
                     offsetY = -frameRow * FRAME_HEIGHT;
@@ -145,16 +145,16 @@ let isAnimating = false;
 let lastFrameTime = performance.now();
 
 function MovePlayer(moves = 2, nextFrame = 0) {
-    
+
     if (isAnimating) return; // prevent race condition for lastFrameTime variable
     isAnimating = true;
 
     // Method 1 : for doing a delay
     let now = performance.now();
     let delta = now - lastFrameTime;
-    
+
     if (delta >= 100) {
-        let frameCol = nextFrame ;
+        let frameCol = nextFrame;
         let frameRow = 0;
 
         offsetX = -frameCol * FRAME_WIDTH;
@@ -165,20 +165,25 @@ function MovePlayer(moves = 2, nextFrame = 0) {
         lastFrameTime = now;
         nextFrame -= 1;
         if (moves === 0) {
+            if (pendingPosition) {
+                playerPosition.x = pendingPosition.x;
+                playerPosition.y = pendingPosition.y;
+                pendingPosition = null;
+            }
             playerDiv.style.left = `${playerPosition.x}px`;
             playerDiv.style.top = `${playerPosition.y}px`;
-    // Method 2 : for doing a delay
+            // Method 2 : for doing a delay
             (async () => {
                 // Reset the position to the initial frame
                 offsetX = -8 * FRAME_WIDTH;
                 offsetY = -0 * FRAME_HEIGHT;
-                await new Promise(resolve => setTimeout(resolve, 150));
+                await new Promise(resolve => setTimeout(resolve, 200));
                 playerDiv.style.backgroundPosition = `${offsetX}px ${offsetY}px`;
                 isAnimating = false;
-                
+
             })();
-            
             return;
+            
         }
         moves -= 1;
     }
@@ -189,35 +194,29 @@ function MovePlayer(moves = 2, nextFrame = 0) {
     });
 }
 
-
+let pendingPosition = null;
 
 function handleKeyDown(event) {
-    
     const key = event.key;
     let newX = playerPosition.x;
     let newY = playerPosition.y;
     let nextFrame = -1;
-    let direction = null;
 
     switch (key) {
         case "ArrowUp":
             newY = playerPosition.y - 10;
-            direction = "up";
             nextFrame = STARTER_FRAME.up;
             break;
         case "ArrowDown":
             newY = playerPosition.y + 10;
-            direction = "down";
             nextFrame = STARTER_FRAME.down;
             break;
         case "ArrowLeft":
             newX = playerPosition.x - 10;
-            direction = "left";
             nextFrame = STARTER_FRAME.left;
             break;
         case "ArrowRight":
             newX = playerPosition.x + 10;
-            direction = "right";
             nextFrame = STARTER_FRAME.right;
             break;
         default:
@@ -225,15 +224,16 @@ function handleKeyDown(event) {
     }
 
     if (canMovePlayer(newX, newY)) {
-        playerPosition.x = newX;
-        playerPosition.y = newY;
+        pendingPosition = { x: newX, y: newY };
     }
-    MovePlayer(2, nextFrame);
+    requestAnimationFrame(() => {
+        MovePlayer(2, nextFrame);
+    });
 }
 
 document.addEventListener("keydown", handleKeyDown);
 
 // draw grid after image loads and frame size is calculated
-getSpriteFrameSize(SPRITES.player1, SPRITE_COLUMNS, SPRITE_ROWS, () => {
+getSpriteFrameSize(SPRITES.enemy1, SPRITE_COLUMNS, SPRITE_ROWS, () => {
     drawGrid(newGrid);
 });
