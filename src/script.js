@@ -9,14 +9,14 @@ const newGrid = transformGrid(constants.grid);
 function handleKeyDown(event) {
     const key = event.key;
     console.log(constants.gameState.playerPosition.y);
-    
+
     let newX = constants.gameState.playerPosition.x;
     let newY = constants.gameState.playerPosition.y;
     let nextFrame = -1;
-    
+
     switch (key) {
         case "ArrowUp":
-            newY = constants.gameState.playerPosition.y - 20;            
+            newY = constants.gameState.playerPosition.y - 20;
             nextFrame = constants.STARTER_FRAME.up;
             break;
         case "ArrowDown":
@@ -34,9 +34,14 @@ function handleKeyDown(event) {
         default:
             return;
     }
-    
-    if (canMovePlayer(newX, newY)) {
-        constants.gameState.pendingPosition = { x: newX, y: newY };
+
+    if (constants.gameState.isAnimating){
+        // If already animating, do not process further key presses
+        return;
+    }
+    if (canMovePlayer(newX, newY) ) {
+        constants.gameState.playerPosition.x = newX;
+        constants.gameState.playerPosition.y = newY;
     }
     requestAnimationFrame(() => {
         MovePlayer(2, nextFrame);
@@ -52,7 +57,7 @@ getSpriteFrameSize(constants.SPRITES.enemy1, constants.SPRITE_COLUMNS, constants
 
 function canMovePlayer(newX, newY) {
     // console.log(newX);
-    
+
     // Convert pixel coordinates to grid indices
     const gridX = Math.floor((newX / 40));
     const gridY = Math.floor((newY + 30) / 40);
@@ -67,18 +72,28 @@ function canMovePlayer(newX, newY) {
     }
 }
 
-
-
+let tempX = 0;
+let tempY = 0;  
 function MovePlayer(moves = 2, nextFrame = 0) {
 
     if (constants.gameState.isAnimating) return; // prevent race condition for lastFrameTime variable
     constants.gameState.isAnimating = true;
-
+    if (!constants.gameState.movementStartTime) {
+        constants.gameState.movementStartTime = performance.now();
+    }
     // Method 1 : for doing a delay
     let now = performance.now();
     let delta = now - constants.gameState.lastFrameTime;
 
     if (delta >= 100) {
+        // constants.gameState.playerDiv.style.transform = `translate(
+        // ${(constants.gameState.playerPosition.x / moves) + tempX}px, 
+        // ${(constants.gameState.playerPosition.y / moves) + tempY}px) 
+        // scale(2)`;
+        constants.gameState.playerDiv.style.top = `${constants.gameState.playerPosition.y }px`;
+        constants.gameState.playerDiv.style.left = `${constants.gameState.playerPosition.x}px`;
+        tempX = constants.gameState.playerPosition.x / moves;
+        tempY = constants.gameState.playerPosition.y / moves;
         let frameCol = nextFrame;
         let frameRow = 0;
 
@@ -90,15 +105,7 @@ function MovePlayer(moves = 2, nextFrame = 0) {
         constants.gameState.lastFrameTime = now;
         nextFrame -= 1;
         if (moves === 0) {
-            
-            if (constants.gameState.pendingPosition) {
-                constants.gameState.playerPosition.x = constants.gameState.pendingPosition.x;
-                constants.gameState.playerPosition.y = constants.gameState.pendingPosition.y;
-                constants.gameState.pendingPosition = null;
-            }
-            
-            constants.gameState.playerDiv.style.left = `${constants.gameState.playerPosition.x}px`;
-            constants.gameState.playerDiv.style.top = `${constants.gameState.playerPosition.y}px`;
+
             // Method 2 : for doing a delay
             (async () => {
                 // Reset the position to the initial frame
@@ -119,4 +126,3 @@ function MovePlayer(moves = 2, nextFrame = 0) {
         MovePlayer(moves, nextFrame);
     });
 }
-

@@ -37,9 +37,9 @@ export const grid = [
 
 export const gameState = {
     playerPosition: { x: 1 * LEFT, y: 1 * TOP },
-    pendingPosition: null,
     isAnimating: false,
     lastFrameTime: performance.now(),
+    movementStartTime : null,
     offsetX: 0,
     offsetY: 0,
     playerDiv: null,
