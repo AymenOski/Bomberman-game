@@ -8,13 +8,15 @@ import { drawGrid, transformGrid } from './core/grid.js';
 const newGrid = transformGrid(constants.grid);
 function handleKeyDown(event) {
     const key = event.key;
+    console.log(constants.gameState.playerPosition.y);
+    
     let newX = constants.gameState.playerPosition.x;
     let newY = constants.gameState.playerPosition.y;
     let nextFrame = -1;
-
+    
     switch (key) {
         case "ArrowUp":
-            newY = constants.gameState.playerPosition.y - 20;
+            newY = constants.gameState.playerPosition.y - 20;            
             nextFrame = constants.STARTER_FRAME.up;
             break;
         case "ArrowDown":
@@ -32,7 +34,7 @@ function handleKeyDown(event) {
         default:
             return;
     }
-
+    
     if (canMovePlayer(newX, newY)) {
         constants.gameState.pendingPosition = { x: newX, y: newY };
     }
@@ -49,10 +51,11 @@ getSpriteFrameSize(constants.SPRITES.enemy1, constants.SPRITE_COLUMNS, constants
 });
 
 function canMovePlayer(newX, newY) {
+    // console.log(newX);
+    
     // Convert pixel coordinates to grid indices
-    const gridX = Math.ceil((newX / 40));
-    const gridY = Math.ceil((newY / 40));
-
+    const gridX = Math.floor((newX / 40));
+    const gridY = Math.floor((newY + 30) / 40);
     switch (newGrid[gridY][gridX]) {
         case "W":
         case "BW":
@@ -61,8 +64,6 @@ function canMovePlayer(newX, newY) {
         case "E":
         case "EC":
             return true;
-        // default:
-        //     return true;
     }
 }
 
@@ -89,11 +90,13 @@ function MovePlayer(moves = 2, nextFrame = 0) {
         constants.gameState.lastFrameTime = now;
         nextFrame -= 1;
         if (moves === 0) {
+            
             if (constants.gameState.pendingPosition) {
                 constants.gameState.playerPosition.x = constants.gameState.pendingPosition.x;
                 constants.gameState.playerPosition.y = constants.gameState.pendingPosition.y;
                 constants.gameState.pendingPosition = null;
             }
+            
             constants.gameState.playerDiv.style.left = `${constants.gameState.playerPosition.x}px`;
             constants.gameState.playerDiv.style.top = `${constants.gameState.playerPosition.y}px`;
             // Method 2 : for doing a delay
@@ -104,7 +107,6 @@ function MovePlayer(moves = 2, nextFrame = 0) {
                 await new Promise(resolve => setTimeout(resolve, 200));
                 constants.gameState.playerDiv.style.backgroundPosition = `${constants.gameState.offsetX}px ${constants.gameState.offsetY}px`;
                 constants.gameState.isAnimating = false;
-
             })();
             return;
 

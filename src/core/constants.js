@@ -1,8 +1,8 @@
 export const CELL_SIZE = 40;
 export const SPRITE_COLUMNS = 18;
 export const SPRITE_ROWS = 5;
-export const TOP = CELL_SIZE - 15;
-export const LEFT = CELL_SIZE + 10;
+export const TOP = CELL_SIZE - 30;
+export const LEFT = CELL_SIZE;
 export const playground = document.getElementsByClassName('playground')[0];
 
 
