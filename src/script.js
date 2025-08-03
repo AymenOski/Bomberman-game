@@ -7,8 +7,11 @@ import { drawGrid, transformGrid } from './core/grid.js';
 
 const newGrid = transformGrid(constants.grid);
 function handleKeyDown(event) {
+    if (constants.gameState.isAnimating) {
+        // If already animating, do not process further key presses
+        return;
+    }
     const key = event.key;
-    console.log(constants.gameState.playerPosition.y);
 
     let newX = constants.gameState.playerPosition.x;
     let newY = constants.gameState.playerPosition.y;
@@ -35,32 +38,74 @@ function handleKeyDown(event) {
             return;
     }
 
-    if (constants.gameState.isAnimating){
-        // If already animating, do not process further key presses
-        return;
+    if (canMovePlayer(newX, newY)) {
+        constants.gameState.isAnimating = true;
+        MovePlayer(newX, newY, nextFrame);
     }
-    if (canMovePlayer(newX, newY) ) {
-        constants.gameState.playerPosition.x = newX;
-        constants.gameState.playerPosition.y = newY;
+}
+
+function MovePlayer(targetX, targetY, startFrame) {
+    const startX = constants.gameState.playerPosition.x;
+    const startY = constants.gameState.playerPosition.y;
+    const distanceX = targetX - startX;
+    const distanceY = targetY - startY;
+    const duration = 200; // Animation duration in milliseconds
+    const startTime = performance.now();
+
+    // Frame sequences for each direction
+    const frameSequences = {
+        [constants.STARTER_FRAME.up]: [2, 1, 0],
+        [constants.STARTER_FRAME.down]: [8, 7, 6],
+        [constants.STARTER_FRAME.left]: [5, 4, 3],
+        [constants.STARTER_FRAME.right]: [11, 10, 9]
+    };
+    const frameSequence = frameSequences[startFrame] || frameSequences[constants.STARTER_FRAME.down];
+
+    function animate(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+
+        // Interpolate position
+        const interpolatedX = startX + distanceX * progress - 40;
+        const interpolatedY = startY + distanceY * progress - 10;
+        constants.gameState.playerDiv.style.transform = `translate3d(${interpolatedX}px, ${interpolatedY}px, 0) scale(2)`;
+
+        // Update sprite frame
+        const frameIndex = Math.floor(progress * frameSequence.length);
+        const frameCol = frameSequence[frameIndex] || frameSequence[0];
+        constants.gameState.playerDiv.style.backgroundPosition = `-${frameCol * FRAME_WIDTH}px -${0 * FRAME_HEIGHT}px`;
+
+        if (progress < 1) {
+            // Continue animation
+            requestAnimationFrame(animate);
+        } else {
+            // Animation complete
+            constants.gameState.playerPosition.x = targetX;
+            constants.gameState.playerPosition.y = targetY;
+            constants.gameState.isAnimating = false;
+            // Reset to the normal frame
+            (async() => {
+                constants.gameState.offsetX = -8 * FRAME_WIDTH;
+                constants.gameState.offsetY = -0 * FRAME_HEIGHT;
+                await new Promise(resolve => setTimeout(resolve, 200));
+                constants.gameState.playerDiv.style.backgroundPosition = `${constants.gameState.offsetX}px ${constants.gameState.offsetY}px`;
+            })();
+        }
     }
-    requestAnimationFrame(() => {
-        MovePlayer(2, nextFrame);
-    });
+
+    requestAnimationFrame(animate);
 }
 
 document.addEventListener("keydown", handleKeyDown);
 
-// draw grid after image loads and frame size is calculated
-getSpriteFrameSize(constants.SPRITES.enemy1, constants.SPRITE_COLUMNS, constants.SPRITE_ROWS, () => {
-    drawGrid(newGrid);
-});
 
 function canMovePlayer(newX, newY) {
-    // console.log(newX);
+
 
     // Convert pixel coordinates to grid indices
     const gridX = Math.floor((newX / 40));
     const gridY = Math.floor((newY + 30) / 40);
+    console.log(newGrid[gridY][gridX]);
     switch (newGrid[gridY][gridX]) {
         case "W":
         case "BW":
@@ -72,57 +117,7 @@ function canMovePlayer(newX, newY) {
     }
 }
 
-let tempX = 0;
-let tempY = 0;  
-function MovePlayer(moves = 2, nextFrame = 0) {
-
-    if (constants.gameState.isAnimating) return; // prevent race condition for lastFrameTime variable
-    constants.gameState.isAnimating = true;
-    if (!constants.gameState.movementStartTime) {
-        constants.gameState.movementStartTime = performance.now();
-    }
-    // Method 1 : for doing a delay
-    let now = performance.now();
-    let delta = now - constants.gameState.lastFrameTime;
-
-    if (delta >= 100) {
-        // constants.gameState.playerDiv.style.transform = `translate(
-        // ${(constants.gameState.playerPosition.x / moves) + tempX}px, 
-        // ${(constants.gameState.playerPosition.y / moves) + tempY}px) 
-        // scale(2)`;
-        constants.gameState.playerDiv.style.top = `${constants.gameState.playerPosition.y }px`;
-        constants.gameState.playerDiv.style.left = `${constants.gameState.playerPosition.x}px`;
-        tempX = constants.gameState.playerPosition.x / moves;
-        tempY = constants.gameState.playerPosition.y / moves;
-        let frameCol = nextFrame;
-        let frameRow = 0;
-
-        constants.gameState.offsetX = -frameCol * FRAME_WIDTH;
-        constants.gameState.offsetY = -frameRow * FRAME_HEIGHT;
-
-        constants.gameState.playerDiv.style.backgroundPosition = `${constants.gameState.offsetX}px ${constants.gameState.offsetY}px`;
-
-        constants.gameState.lastFrameTime = now;
-        nextFrame -= 1;
-        if (moves === 0) {
-
-            // Method 2 : for doing a delay
-            (async () => {
-                // Reset the position to the initial frame
-                constants.gameState.offsetX = -8 * FRAME_WIDTH;
-                constants.gameState.offsetY = -0 * FRAME_HEIGHT;
-                await new Promise(resolve => setTimeout(resolve, 200));
-                constants.gameState.playerDiv.style.backgroundPosition = `${constants.gameState.offsetX}px ${constants.gameState.offsetY}px`;
-                constants.gameState.isAnimating = false;
-            })();
-            return;
-
-        }
-        moves -= 1;
-    }
-
-    requestAnimationFrame(() => {
-        constants.gameState.isAnimating = false;
-        MovePlayer(moves, nextFrame);
-    });
-}
+// draw grid after image loads and frame size is calculated
+getSpriteFrameSize(constants.SPRITES.enemy1, constants.SPRITE_COLUMNS, constants.SPRITE_ROWS, () => {
+    drawGrid(newGrid);
+});
