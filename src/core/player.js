@@ -9,7 +9,7 @@ function createPlayerDiv(frameRow = 0, frameCol = 8) {
     playerDiv.style.width = `${FRAME_WIDTH}px`;
     playerDiv.style.height = `${FRAME_HEIGHT}px`;
     playerDiv.style.backgroundSize = `${SPRITE_SHEET_WIDTH}px ${SPRITE_SHEET_HEIGHT}px`;
-    playerDiv.style.backgroundImage = `url(${constants.SPRITES.enemy1})`;
+    playerDiv.style.backgroundImage = `url(${constants.SPRITES.player1})`;
     playerDiv.style.transform = "scale(2)";
     playerDiv.style.backgroundPosition = `-${frameCol * FRAME_WIDTH}px -${frameRow * FRAME_HEIGHT}px`;
     playerDiv.style.imageRendering = "pixelated";

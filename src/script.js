@@ -34,8 +34,27 @@ function handleKeyDown(event) {
             newX = constants.gameState.playerPosition.x + 20;
             nextFrame = constants.STARTER_FRAME.right;
             break;
-        default:
+        case "p":
+        case "P": // Pause/Unpause the game
+            if (!constants.gameState.isPaused) {
+                const PauseDiv = document.createElement("PauseDiv");
+                const div = document.createElement("div");
+                PauseDiv.classList.add("Paused");
+                PauseDiv.innerHTML = "Game Paused";
+                document.querySelector(".hud-container").appendChild(PauseDiv);
+                constants.gameState.isPaused = true;
+                
+            } else if (constants.gameState.isPaused) {
+                const PausedDiv = document.querySelector(".Paused");
+                PausedDiv.remove();
+
+                constants.gameState.isPaused = false;
+            }
             return;
+        default:
+            console.log("Invalid key pressed");
+
+            return; // Ignore other keys
     }
 
     if (canMovePlayer(newX, newY)) {
@@ -84,7 +103,7 @@ function MovePlayer(targetX, targetY, startFrame) {
             constants.gameState.playerPosition.y = targetY;
             constants.gameState.isAnimating = false;
             // Reset to the normal frame
-            (async() => {
+            (async () => {
                 constants.gameState.offsetX = -8 * FRAME_WIDTH;
                 constants.gameState.offsetY = -0 * FRAME_HEIGHT;
                 await new Promise(resolve => setTimeout(resolve, 200));
@@ -118,6 +137,6 @@ function canMovePlayer(newX, newY) {
 }
 
 // draw grid after image loads and frame size is calculated
-getSpriteFrameSize(constants.SPRITES.enemy1, constants.SPRITE_COLUMNS, constants.SPRITE_ROWS, () => {
+getSpriteFrameSize(constants.SPRITES.player1, constants.SPRITE_COLUMNS, constants.SPRITE_ROWS, () => {
     drawGrid(newGrid);
 });

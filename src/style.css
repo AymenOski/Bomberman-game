@@ -70,6 +70,28 @@
     height: 32px;
 }
 
+.Paused {
+    background: #1a1a1a;
+    border: 2px solid #fff;
+    border-radius: 12px;
+    padding: 30px 40px;
+    left: 18px;
+    text-align: center;
+    box-shadow: 0 0 20px #000;
+    color: white;
+    font-family: "Segoe UI", sans-serif;
+    z-index: 1000;
+    position: absolute;
+    width: 450px;
+    height: 300px;
+    animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from { transform: scale(0.8); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
 @keyframes playAnimation {
     0% {
         background-position: 0 0;
